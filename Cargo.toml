@@ -1,0 +1,12 @@
+[package]
+name = "egui-sdl3"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+keywords = [ "sdl", "sdl3", "egui" ]
+repository = "https://github.com/rashen/egui-sdl3"
+
+[dependencies]
+egui = "0.32.1"
+sdl3-sys = "0.5.4"
+
