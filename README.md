@@ -2,7 +2,7 @@
 
 `egui-sdl3` is an [sdl3-backend](https://wiki.libsdl.org/SDL3/FrontPage) for [egui](https://github.com/emilk/egui). This crate uses unsafe C-bindings from [sdl3-sys](https://codeberg.org/maia/sdl3-sys-rs), if you prefer safe bindings I recommend rewriting this to use [sdl3-rs](https://github.com/vhspace/sdl3-rs) instead.
 
-** Please note that this crate has not been released yet, it will most likely contain bugs. **
+**Please note that this crate has not been released yet, it will most likely contain bugs.**
 
 ## Usage
 
