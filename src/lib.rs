@@ -24,6 +24,7 @@ struct Cursor {
     looks: SDL_SystemCursor,
 }
 impl Cursor {
+    /* SAFETY: This needs to be called from main thread */
     pub fn new(looks: SDL_SystemCursor) -> Result<Self, &'static CStr> {
         unsafe {
             let ptr = SDL_CreateSystemCursor(looks);
@@ -35,6 +36,7 @@ impl Cursor {
     }
 }
 impl Drop for Cursor {
+    /* SAFETY: This needs to be called from main thread */
     fn drop(&mut self) {
         if !self.ptr.is_null() {
             unsafe {
@@ -60,6 +62,8 @@ pub struct Painter {
 }
 
 impl Painter {
+    /* SAFETY: Painter must be intialized after SDL_Window has been created, otherwise getting
+     * window size will fail. */
     pub fn new(window: *mut SDL_Window) -> Self {
         let mut screen_size_x = 0;
         let mut screen_size_y = 0;
@@ -70,12 +74,7 @@ impl Painter {
         let pixels_per_point = screen_pixels_x as f32 / screen_pixels_x as f32;
 
         let looks = mouse::SDL_SYSTEM_CURSOR_DEFAULT;
-        let cursor = unsafe {
-            Cursor {
-                ptr: SDL_CreateSystemCursor(looks),
-                looks,
-            }
-        };
+        let cursor = Cursor::new(looks).expect("Failed to init cursor");
 
         let ctx = egui::Context::default();
         ctx.set_pixels_per_point(pixels_per_point);
@@ -101,6 +100,8 @@ impl Painter {
         self.raw_input.time = Some(duration);
     }
 
+    /* SAFETY: Unsafe interpretation of C union. Clipboard functions needs to be run from main
+     * thread. */
     pub fn handle_event(&mut self, event: SDL_Event, window: *mut SDL_Window) -> bool {
         let mut handled = false;
         let event_type = unsafe { SDL_EventType(event.r#type) };
@@ -283,6 +284,7 @@ impl Painter {
         self.ctx.clone()
     }
 
+    /* SAFETY: This needs to be called from main thread */
     pub fn end_pass(&mut self) {
         let output = self.ctx.end_pass();
         for cmd in output.platform_output.commands {
@@ -348,6 +350,7 @@ impl Painter {
         });
     }
 
+    /* SAFETY: This needs to be called from main thread */
     pub fn draw(&mut self, renderer: *mut render::SDL_Renderer) {
         if self.draw_info.is_none() {
             return;
@@ -489,7 +492,7 @@ impl Painter {
                     }
                 }
                 Primitive::Callback(_) => {
-                    todo!();
+                    unimplemented!()
                 }
             }
         }
@@ -500,6 +503,7 @@ impl Painter {
     }
 }
 
+/* SAFETY: Safe to call from any thread. Unsafe due to FFI only. */
 fn get_modifiers() -> egui::Modifiers {
     let mod_state = unsafe { SDL_GetModState() };
     let alt = mod_state & (keycode::SDL_KMOD_LALT | keycode::SDL_KMOD_RALT) > 0;
