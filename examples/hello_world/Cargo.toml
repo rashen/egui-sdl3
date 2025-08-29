@@ -1,0 +1,13 @@
+[package]
+name = "hello_world"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.86"
+
+
+[dependencies]
+egui = "0.32.1"
+egui-sdl3 = { path = "../../" }
+sdl3-sys = { version = "0.5.4", features = ["build-from-source-static"] }
+
+
